@@ -6,6 +6,10 @@
 import random
 import string 
 
+# READ_FILE = input("Enter relative path of the file with the contacts: ")
+READ_FILE = 'Users-Pwds(10).txt'
+WRITE_FILE = "Users-Pwds-Chked.txt"
+
 def rank(pwd: str) -> str:
     '''
     Ranker function that ranks the password based on the assigned criteria
@@ -33,7 +37,29 @@ def rank(pwd: str) -> str:
     Returns: rank -> rank of password; POOR / MODERATE / STRONG
     '''
     ## Start code here
+
+    bool_list = list()
+    print(bool_list)
+    rank_score = 0
+
+    bool_list.append(any(elem in string.ascii_uppercase for elem in pwd))
+    bool_list.append(any(elem in string.ascii_lowercase for elem in pwd))
+    bool_list.append(any(elem in string.digits for elem in pwd))
+    bool_list.append(any(elem in string.punctuation for elem in pwd))
+
+    for temp_bool in bool_list:
+        if temp_bool:
+            rank_score += 1
     
+    if rank_score < 3 or len(pwd) < 8:
+        rank = "POOR"
+    elif rank_score < 4 or len(pwd) < 10:
+        rank = "MODERATE"
+    else:
+        rank = "STRONG"
+
+    # print("success")
+
     ## End code here
     return rank
 
@@ -50,6 +76,33 @@ def option1():
     # 5. Close necessary files and print to terminal.
     
     ## START CODE HERE
+
+    with open(READ_FILE, 'r') as f:
+        usrpwds = list(f.readlines())
+
+    all_vals = list()
+
+    rank_scores = list()
+    for each_line in usrpwds:
+                
+        seperated_vals = each_line.split(",")
+        # print(seperated_vals)
+        
+        username = seperated_vals[0]
+        password = seperated_vals[1].replace("\n", "") #i dont know why tara password ko end ma euta \n airako thyo so teslai replace gareko .. this toook ma 10 min to find kina extra \n aairako cha bhanera haha
+        pwd_rank = rank(password)
+
+        all_vals.append([username, password, pwd_rank])     
+
+    # print(all_vals) 
+
+    with open(WRITE_FILE, 'w') as f:
+        for each_element in all_vals:
+            what_to_write = ",".join(each_element)
+            f.write(what_to_write)
+            f.write("\n")
+
+    # print("bhayo")
 
     ## END CODE HERE
 
@@ -90,6 +143,15 @@ def option2():
         # While the required ranking is not met continue joining new Ualphabet, Lalphabet, chars and digits.
         
         ## START CODE HERE
+        sample_lst = list()
+
+        sample_lst.append([random.choice(Ualphabets) for i in range(5)])
+        sample_lst.append([random.choice(Lalphabets) for i in range(5)])
+        sample_lst.append([random.choice(digits) for i in range(5)])
+        sample_lst.append([random.choice(chars) for i in range(5)])
+
+
+        pwd = "".join("".join(map(str, l)) for l in sample_lst)
 
         ## END CODE HERE
         return pwd
@@ -97,12 +159,31 @@ def option2():
     # Ask for username and check 20 character limits
 
     ## START CODE HERE
-
+    sample_username = str(input("Enter the username: "))
+    if len(sample_username) >= 20:
+        print("sorry invalid username")
+        raise ValueError("Username is invalid")
     ## END CODE HERE
 
     # Generate the password using generate() and follow the steps as guided in the function header. 
 
     ## START CODE HERE
+    sample_password = generate()
+    sample_password_rank = rank(sample_password)
+
+    print(f"The password is {sample_password} and the rank is {sample_password_rank}")
+
+    write_to_file = int(input("Add this username and password to file? 1 for Yes and 0 for No:  "))
+    if write_to_file == 1:
+        with open(WRITE_FILE, 'a') as f:
+            temp  = ",".join(sample_username, sample_password, sample_password_rank)
+            f.write(temp)
+    elif write_to_file == 0:
+        main()
+        pass
+    else:
+        print("Enter either 1 or 0")
+
 
     ## END CODE HERE
 
@@ -119,10 +200,25 @@ def main():
         # exit the loop by using the break command if the user selects 3 other wise use option1() and option 2() function 
 
         ## START CODE HERE
+        try:
+            inp = int(inp)
+            if inp == 1:
+                option1()
+            elif inp == 2:
+                option2()
+            elif inp == 3:
+                print("Program stopped")
+                break
+            else:
+                print("Enter either 1 or 2 or 3\n\n")
 
+        except Exception as exception:
+            print("Error: {}".format(exception))
         ## END CODE HERE
 
 
 # DONOT TOUCH THESE LINES
 if __name__=='__main__':
     main()
+
+option2()
