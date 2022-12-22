@@ -1,5 +1,6 @@
 import bs4
 import requests as req
+from datetime import datetime
 
 def request_site(web_url: str) -> str:
     return req.get(web_url, timeout=100).text
@@ -14,6 +15,8 @@ def get_price_from_soup(soup: bs4.BeautifulSoup) -> str:
     return npr
 
 def write_price_to_file(price: str, filename: str) -> None:
+    current_time = datetime.now()
+    time_str = current_time.strftime("%Y-%m-%d")
     with open(filename, mode="a") as f:
         f.write(price)
 
