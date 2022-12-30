@@ -31,6 +31,8 @@ def news_scraper(url:str) -> list:
     for article_title in articles:
         try:
             news.append(article_title.find_all('a')[0].text)
+            link = news.append(article_title.find('a', href=True)['href'])
+            print(link)
         except Exception:   
             try:
                 news.append(article_title.find_all('span')[0].text)
@@ -66,4 +68,5 @@ def news_artilces_saver(filename:str):
 
 
 if __name__=="__main__":
-    news_artilces_saver("mero_news.txt")
+    # news_artilces_saver("mero_news.txt")
+    news_scraper(url)
